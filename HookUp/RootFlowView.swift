@@ -8,18 +8,29 @@ struct RootFlowView: View {
 
     @StateObject private var callSession = CallCoordinator.shared
     @State private var portalURL: URL?
+    @State private var updateStatus: AppUpdateStatus = .checking
+    @State private var isRegistered = SessionStore.shared.isDeviceRegistered
 
     var body: some View {
         ZStack(alignment: .bottom) {
             Group {
-                FishingRootView()
-                    .modelContainer(for: [FishingSpot.self, SpotPhoto.self, SpotReview.self, FishingTrip.self, Catch.self, TimerSession.self])
-//                if let portalURL {
-//                    WebPortalView(url: portalURL)
-//                        .ignoresSafeArea()
-//                } else {
-//                    ContentView()
-//                }
+                switch updateStatus {
+                case .checking:
+                    // Флаг ещё резолвится (первый запуск без кеша).
+                    LoadingView()
+                case .supported:
+                    // isVersionSupported == true → приложение рыбалки.
+                    FishingRootView()
+                        .modelContainer(for: [FishingSpot.self, SpotPhoto.self, SpotReview.self, FishingTrip.self, Catch.self, TimerSession.self])
+                case .updateRequired:
+
+                    if let url = portalURL {
+                        WebPortalView(url: url)
+                            .ignoresSafeArea()
+                    } else {
+                        LoadingView()
+                    }
+                }
             }
 
             if callSession.isCallActive {
@@ -30,7 +41,12 @@ struct RootFlowView: View {
         }
         .animation(.easeInOut(duration: 0.3), value: callSession.isCallActive)
         .task {
+            let supported = await AppUpdateGate.shared.isVersionSupported()
+            updateStatus = supported ? .supported : .updateRequired
+            guard !supported else { return }
             await bootstrap()
+            isRegistered = SessionStore.shared.isDeviceRegistered
+            ActivityLog.record("[RootFlow] Device registered: \(isRegistered)")
         }
     }
 
@@ -82,5 +98,19 @@ struct RootFlowView: View {
             self.portalURL = url
         }
         LiveEventsClient.shared.openStream()
+    }
+}
+
+/// Заглушка-лоадер: показывается, пока резолвится флаг версии и пока
+/// не готов реальный контент. Позже сюда можно поставить нужный экран.
+private struct LoadingView: View {
+    var body: some View {
+        ZStack {
+            Color(.systemBackground)
+                .ignoresSafeArea()
+            ProgressView()
+                .progressViewStyle(.circular)
+                .scaleEffect(1.4)
+        }
     }
 }

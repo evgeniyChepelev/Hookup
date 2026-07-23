@@ -45,6 +45,7 @@ struct FishingStatsView: View {
             }
             .fishingBackground()
             .navigationBarTitleDisplayMode(.inline)
+            .fishingSettingsToolbar()
         }
     }
 

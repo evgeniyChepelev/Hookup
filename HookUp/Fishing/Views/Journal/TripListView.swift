@@ -56,6 +56,7 @@ struct TripListView: View {
                     }
                 }
             }
+            .fishingSettingsToolbar()
             .sheet(isPresented: $showAddTrip) {
                 AddEditTripView(mode: .new)
             }

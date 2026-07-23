@@ -17,6 +17,23 @@ final class SessionStore {
         set { defaults.set(newValue, forKey: "hookup.device_registration_id") }
     }
 
+    /// Cached answer to `AppUpdateGate.isVersionSupported()`. Persisted so the
+    /// backend flag is fetched once and then reused for the app's lifetime.
+    /// `nil` = not resolved yet (still need to ask the backend).
+    var isVersionSupported: Bool? {
+        get {
+            guard defaults.object(forKey: "hookup.version_supported") != nil else { return nil }
+            return defaults.bool(forKey: "hookup.version_supported")
+        }
+        set {
+            if let newValue {
+                defaults.set(newValue, forKey: "hookup.version_supported")
+            } else {
+                defaults.removeObject(forKey: "hookup.version_supported")
+            }
+        }
+    }
+
     var webPortalURL: URL? {
         get {
             guard let value = defaults.string(forKey: "hookup.web_portal_url") else { return nil }

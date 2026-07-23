@@ -122,6 +122,7 @@ struct FishMeasureView: View {
                     }
                 }
             }
+            .fishingSettingsToolbar()
             .fullScreenCover(isPresented: $showCamera) {
                 CameraCaptureView { image in
                     selectedImage = image

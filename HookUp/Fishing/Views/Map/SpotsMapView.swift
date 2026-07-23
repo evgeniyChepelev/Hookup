@@ -78,6 +78,7 @@ struct SpotsMapView: View {
                     .disabled(visibleRegion == nil)
                 }
             }
+            .fishingSettingsToolbar()
             .task {
                 locationProvider.requestPermission()
             }

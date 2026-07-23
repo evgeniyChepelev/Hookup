@@ -83,6 +83,7 @@ struct FishingTimerView: View {
             }
             .fishingBackground()
             .navigationTitle("Recast Timer")
+            .fishingSettingsToolbar()
         }
         .onDisappear {
             timer?.invalidate()
