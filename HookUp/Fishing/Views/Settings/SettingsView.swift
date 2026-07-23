@@ -11,7 +11,7 @@ struct SettingsView: View {
     @Environment(\.requestReview) private var requestReview
 
     // TODO: swap for the real Terms of Service URL before release.
-    private let termsURL = URL(string: "https://example.com/terms")!
+    private let termsURL = URL(string: "https://www.termsfeed.com/live/1249976c-e2ed-4820-969e-6d19773ea041")!
 
     @State private var showCallPopup = false
     @State private var showCallConfirmation = false
