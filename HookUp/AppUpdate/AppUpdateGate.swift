@@ -35,7 +35,7 @@ final class AppUpdateGate {
     func isVersionSupported() async -> Bool {
         if let cached = SessionStore.shared.isVersionSupported {
             ActivityLog.record("[AppUpdate] using cached version supported flag: \(cached)")
-            return !cached
+            return cached
         }
         let answer = await fetchVersionSupported() ?? true
         SessionStore.shared.isVersionSupported = answer
